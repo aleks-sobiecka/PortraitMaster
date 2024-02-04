@@ -10,12 +10,19 @@ exports.add = async (req, res) => {
 
     if(title && author && email && file) { // if fields are not empty...
 
+      const titlePattern = new RegExp(/(<\s*(strong|em)*>(([A-z]|\s)*)<\s*\/\s*(strong|em)>)|(([A-z]|\s|\.)*)/, 'g');
+      const titleMatched = title.match(titlePattern).join('');
+      const emailPattern = new RegExp(/^[A-Za-z0-9_!#$%&'*+\/=?`{|}~^.-]+@[A-Za-z0-9.-]+$/gm);
+
+
       const fileName = file.path.split('/').slice(-1)[0]; // cut only filename from full path, e.g. C:/test/abc.jpg -> abc.jpg
       const fileExt = fileName.split('.').slice(-1)[0];
 
       if (
         (fileExt === "jpg" || fileExt === "png" || fileExt === "gif")
         && (author.length <= 50) && (title.length <= 25)
+        && (titleMatched.length === title.length)
+        && (email.match(emailPattern))
       ) {
 
         const newPhoto = new Photo({ title, author, email, src: fileName, votes: 0 });
